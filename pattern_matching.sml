@@ -93,7 +93,7 @@ fun all_same_color(cs)=
     in
         case cs of
             [] => true
-            | x::xs => aux(xs, card_color(x))
+            | c::cl => aux(cl, card_color(c))
     end
     
     
@@ -109,28 +109,30 @@ fun sum_cards(cs) =
     
 fun score(cs,goal)=
     let
-        sum = sum_cards(cs)
-        if sum > goal
-        then
-            psc = (sum-goal)*3
-        else
-            psc = (goal-sum)
+        fun result(act, goal)=
+            if act > goal
+            then
+                (act-goal)*3
+            else
+                goal-act
+        val sum = sum_cards(cs)
     in
         if all_same_color(cs)
-        then psc div 2
-        else psc
+        then result(sum, goal) div 2
+        else 
+        result(sum, goal)
     end
     
 fun officiate(cs, ms, goal)=
     let
-        fun game(cs,hcs,ms,goal) = 
-            case ms of
+        fun game(cls,hcs,mls,goal) = 
+            case mls of
             [] => score(hcs, goal)
             | m::xs => case m of 
-                        Draw => case cs of
-                            [] = > score(hcs, goal)
-                            | dc::rcs => if sum_cards(dc::hcs) > goal then score(hcs, goal) else game(rcs,dc::hcs,xs,goal)
-                        | Discard c => game(cs,remove_card(hcs,c,IllegalMove),xs,goal)
+                        Discard c => game(cls,remove_card(hcs,c,IllegalMove),xs,goal)
+                        | Draw => case cls of
+                            [] => score(hcs, goal)
+                            | dc::rcs => if sum_cards(dc::hcs) > goal then score(dc::hcs, goal) else game(rcs,dc::hcs,xs,goal)
     in
         game(cs,[],ms,goal)
     end

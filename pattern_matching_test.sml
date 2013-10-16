@@ -50,17 +50,27 @@ val test7_b = remove_card([(Hearts, Ace),(Hearts, King)], (Hearts, Ace), Illegal
 val test8_a = all_same_color([(Hearts, Ace), (Hearts, Ace)]) = true
 val test8_b = all_same_color([(Hearts, Ace), (Hearts, King), (Hearts, Ace), (Hearts, Num 10)]) = true
 val test8_c = all_same_color([(Hearts, Ace), (Spades, Ace), (Hearts, Ace), (Hearts, Ace)]) = false
-val test8_c = all_same_color([]) = true
+val test8_d = all_same_color([]) = true
+val test8_e = all_same_color([(Clubs, Queen),(Clubs, Jack),(Hearts, Ace),(Clubs, Num 10),(Clubs, King)]) = false
 
 val test9_a = sum_cards([(Clubs, Num 2),(Clubs, Num 2)]) = 4
 val test9_b = sum_cards([]) = 0
-val test9_c = sum_cards([(Clubs, Num 2),(Clubs, Ace)]) = 15
-val test9_d = sum_cards([(Clubs, King),(Clubs, Num 2)]) = 14
+val test9_c = sum_cards([(Clubs, Num 2),(Clubs, Ace)]) = 13
+val test9_d = sum_cards([(Clubs, King),(Clubs, Num 2)]) = 12
 val test9_e = sum_cards([(Clubs, Queen),(Clubs, Jack),(Clubs, Ace),(Clubs, Num 10),(Clubs, King)]) = 51
 
 val test10_a = score([(Hearts, Num 2),(Clubs, Num 4)],10) = 4
-val test10_a = score([],10) = 5
-val test10_a = score([(Hearts, Num 2),(Hearts, Num 4)],10) = 2
-val test10_a = score([(Clubs, Queen),(Clubs, Jack),(Clubs, Ace),(Clubs, Num 10),(Clubs, King)],10) = 20
-val test10_a = score([(Clubs, Queen),(Clubs, Jack),(Spades, Ace),(Clubs, Num 10),(Clubs, King)],10) = 123
+val test10_b = score([],10) = 5
+val test10_c = score([(Hearts, Num 2),(Hearts, Num 4)],10) = 2
+val test10_d = score([(Clubs, Queen),(Clubs, Jack),(Clubs, Ace),(Clubs, Num 10),(Clubs, King)],10) = 61
+val test10_e = score([(Clubs, Queen),(Clubs, Jack),(Hearts, Ace),(Clubs, Num 10),(Clubs, King)],10) = 123
 
+val test11 = officiate([(Hearts, Num 2),(Clubs, Num 4)],[Draw], 15) = 6
+
+val test12 = officiate([(Clubs,Ace),(Spades,Ace),(Clubs,Ace),(Spades,Ace)], [Draw,Draw,Draw,Draw,Draw],42) = 3
+
+val test13 = ((officiate([(Clubs,Jack),(Spades,Num(8))],
+                         [Draw,Discard(Hearts,Jack)],
+                         42);
+               false) 
+              handle IllegalMove => true)
