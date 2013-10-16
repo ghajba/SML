@@ -62,35 +62,75 @@ fun card_color(c)=
     case c of
         (Clubs,_) => Black
       | (Spades,_) => Black
-      | (_,_) => Red
+      | _ => Red
       
 fun card_value(c) =
     case c of
         (_, Num i) => i
       | (_, Ace) => 11
-      | (_, _) => 10
+      | _ => 10
       
 fun remove_card(cs, c, e)=
-    let fun all_except_card(cs, acc) =
-        case cs of
-        [] => raise e
-        | card1::cs' => if card1 = c
-        then acc @ cs'
-        else all_except_card(cs', acc @ [card1])
+    let 
+        fun all_except_card(cs, acc) =
+            case cs of
+            [] => raise e
+            | card1::cs' => if card1 = c
+                then acc @ cs'
+                else all_except_card(cs', acc @ [card1])
     in
         all_except_card(cs, [])
     end 
     
 fun all_same_color(cs)=
-     let fun aux (lst : card list, clr : color)=
-        case lst of
-            [] => true
-            | x::xs => case clr = card_color(x) of
-                true => aux(xs, clr)
-                | _ => false
+     let 
+        fun aux (lst : card list, clr : color)=
+            case lst of
+                [] => true
+                | x::xs => case clr = card_color(x) of
+                    true => aux(xs, clr)
+                    | _ => false
     in
         case cs of
             [] => true
             | x::xs => aux(xs, card_color(x))
     end
     
+    
+fun sum_cards(cs) = 
+    let 
+        fun aux(cs,acc)=
+            case cs of
+            [] => acc
+            | x::xs => aux(xs,acc+card_value(x))
+    in
+        aux(cs,0)
+    end
+    
+fun score(cs,goal)=
+    let
+        sum = sum_cards(cs)
+        if sum > goal
+        then
+            psc = (sum-goal)*3
+        else
+            psc = (goal-sum)
+    in
+        if all_same_color(cs)
+        then psc div 2
+        else psc
+    end
+    
+fun officiate(cs, ms, goal)=
+    let
+        fun game(cs,hcs,ms,goal) = 
+            case ms of
+            [] => score(hcs, goal)
+            | m::xs => case m of 
+                        Draw => case cs of
+                            [] = > score(hcs, goal)
+                            | dc::rcs => if sum_cards(dc::hcs) > goal then score(hcs, goal) else game(rcs,dc::hcs,xs,goal)
+                        | Discard c => game(cs,remove_card(hcs,c,IllegalMove),xs,goal)
+    in
+        game(cs,[],ms,goal)
+    end
